@@ -1,4 +1,4 @@
-// Bot Contador de Cocô para WhatsApp v6
+// Bot Contador de Cocô para WhatsApp v7
 // Criado com a biblioteca whatsapp-web.js
 
 // --- CONFIGURAÇÕES ---
@@ -62,9 +62,14 @@ function checkNewDay() {
 }
 
 console.log('Iniciando o bot...');
-const client = new Client({ authStrategy: new LocalAuth() });
+// [CORREÇÃO DEFINITIVA] Adiciona argumentos para o Puppeteer funcionar no Render
+const client = new Client({
+    authStrategy: new LocalAuth(),
+    puppeteer: {
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    }
+});
 
-// [MUDANÇA] GERA UM LINK PARA O QR CODE EM VEZ DE DESENHAR
 client.on('qr', qr => {
     console.log('--------------------------------------------------');
     console.log('O QR CODE NÃO PODE SER EXIBIDO AQUI.');
