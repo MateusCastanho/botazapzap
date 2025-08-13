@@ -1,0 +1,15 @@
+    {
+      "name": "bot-cagoes",
+      "version": "1.0.0",
+      "description": "Bot para contagem de cagadas no WhatsApp",
+      "main": "bot.js",
+      "scripts": {
+        "start": "node bot.js"
+      },
+      "dependencies": {
+        "whatsapp-web.js": "^1.23.0",
+        "qrcode-terminal": "^0.12.0",
+        "node-schedule": "^2.1.1"
+      }
+    }
+    

@@ -1,0 +1,12 @@
+    # Pasta da sessão do WhatsApp - MUITO IMPORTANTE!
+    .wwebjs_auth/
+
+    # Arquivos de log e dependências locais
+    node_modules/
+    npm-debug.log
+    *.log
+
+    # Arquivos de dados (opcional, mas recomendado se não quiser versionar)
+    ranking_mensal.json
+    ranking_diario.json
+    
