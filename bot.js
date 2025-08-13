@@ -1,4 +1,4 @@
-// Bot Contador de Cocô para WhatsApp v5
+// Bot Contador de Cocô para WhatsApp v6
 // Criado com a biblioteca whatsapp-web.js
 
 // --- CONFIGURAÇÕES ---
@@ -8,7 +8,6 @@ const ADMIN_NUMBER = '554591065603@c.us';
 // --- INÍCIO DO CÓDIGO ---
 
 const { Client, LocalAuth } = require('whatsapp-web.js');
-const qrcode = require('qrcode-terminal');
 const fs = require('fs');
 const schedule = require('node-schedule');
 
@@ -28,7 +27,7 @@ const getTodayDateString = () => new Date().toISOString().slice(0, 10);
 try {
     if (fs.existsSync(ARQUIVO_MENSAL_DB)) {
         rankingMensal = JSON.parse(fs.readFileSync(ARQUIVO_MENSAL_DB, 'utf8'));
-        if (!rankingMensal.users) { // Garante compatibilidade com a estrutura antiga
+        if (!rankingMensal.users) {
             rankingMensal = getInitialMonthlyData();
         }
     }
@@ -65,10 +64,15 @@ function checkNewDay() {
 console.log('Iniciando o bot...');
 const client = new Client({ authStrategy: new LocalAuth() });
 
+// [MUDANÇA] GERA UM LINK PARA O QR CODE EM VEZ DE DESENHAR
 client.on('qr', qr => {
-    console.log('ESCANEAR O QR CODE ABAIXO COM SEU WHATSAPP');
-    qrcode.generate(qr, { small: true });
+    console.log('--------------------------------------------------');
+    console.log('O QR CODE NÃO PODE SER EXIBIDO AQUI.');
+    console.log('ABRA O LINK ABAIXO NO SEU NAVEGADOR PARA ESCANEAR:');
+    console.log(`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(qr)}`);
+    console.log('--------------------------------------------------');
 });
+
 
 client.on('ready', () => {
     console.log('==================================================');
@@ -114,7 +118,6 @@ client.on('message', async message => {
                 rankingDiario.users[senderId] = { count: 0 };
             }
 
-            // Incrementa contagens
             rankingMensal.users[senderId].name = senderName;
             rankingMensal.users[senderId].totalCount++;
             rankingDiario.users[senderId].count++;
@@ -122,14 +125,11 @@ client.on('message', async message => {
 
             const contagemDiariaUsuario = rankingDiario.users[senderId].count;
             
-            // [MUDANÇA] Mensagem agora mostra o total do DIA
             const resposta = `💩 de ${senderName} registrada!\nTotal no dia: ${contagemDiariaUsuario}`;
             chat.sendMessage(resposta);
             
-            // [NOVO] Funcionalidade do CAGÃO MASTER
             if (contagemDiariaUsuario === 10) {
                 const cagaoMasterMsg = `👑👑 *CAGÃO MASTER* 👑👑\n${senderName} ATINGIU A MARCA DE 10 CAGADAS HOJE! UMA LENDA VIVA!`;
-                // Envia a mensagem especial 10 vezes para comemorar
                 for (let i = 0; i < 10; i++) {
                     await chat.sendMessage(cagaoMasterMsg);
                 }
@@ -155,10 +155,8 @@ client.on('message', async message => {
 
         if (message.body.trim().toLowerCase() === '!reset') {
             if (senderId === ADMIN_NUMBER) {
-                // Reseta o ranking mensal
                 rankingMensal = getInitialMonthlyData();
                 
-                // [CORREÇÃO] Reseta manualmente o ranking diário também para garantir que a contagem do dia comece do zero.
                 console.log('Resetando ranking diário como parte do !reset.');
                 rankingDiario = {
                     date: getTodayDateString(),
